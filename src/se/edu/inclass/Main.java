@@ -6,6 +6,7 @@ import se.edu.inclass.task.Task;
 import se.edu.inclass.task.TaskNameComparator;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -21,10 +22,18 @@ public class Main {
 
         System.out.println("Total number of deadlines: " + countDeadlines(tasksData));
 
+
+        printDeadlineWithStream(tasksData);
+        ArrayList<Task> filteredTasks = filterTaskByString(tasksData, "11");
+        System.out.println("Filtered tasks");
+        printData(filteredTasks);
+
+
         printData(tasksData);
         printTaskWithStream(tasksData);
         printDeadlineWithStream(tasksData);
         System.out.println("Count of Deadlines with Stream: " + countDeadlineWithStream(tasksData));
+
     }
 
     private static int countDeadlines(ArrayList<Task> tasksData) {
@@ -42,12 +51,6 @@ public class Main {
         tasks.stream().forEach(System.out::println);
     }
 
-    public static void printDeadlineWithStream(ArrayList<Task> tasks) {
-        System.out.println("Print Deadlines with stream:");
-        tasks.stream()
-                .filter((t) -> (t instanceof Deadline))
-                .forEach(System.out::println);
-    }
 
     private static int countDeadlineWithStream(ArrayList<Task> tasks) {
         int count = 0;
@@ -68,5 +71,20 @@ public class Main {
                 System.out.println(t);
             }
         }
+    }
+
+    public static void printDeadlineWithStream(ArrayList<Task> tasks) {
+        System.out.println("Print with stream:");
+        tasks.stream().
+                filter((t) -> (t instanceof Deadline)).
+                sorted((t1, t2) -> t1.getDescription().toLowerCase(Locale.ROOT).compareTo(t2.getDescription().toLowerCase(Locale.ROOT))).
+                forEach(System.out::println);
+    }
+
+    public static ArrayList filterTaskByString(ArrayList<Task> tasks, String filterString) {
+        ArrayList<Task> filteredTasks = (ArrayList<Task>) tasks.stream()
+                .filter((t) -> t.getDescription().contains(filterString))
+                .collect(Collectors.toList());
+        return filteredTasks;
     }
 }
